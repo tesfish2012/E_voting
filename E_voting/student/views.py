@@ -45,7 +45,7 @@ def my_view(request, id=None):
             except Voter.DoesNotExist:
                 return JsonResponse({'message': 'Instance not found'}, status=404)
         else:
-            voters = Voter.objects.filter(id__lte=8)
+            voters = Voter.objects.filter(id__lte=1000000000)
             template = loader.get_template('student/voters.html')
             context = {
                 "voters": voters
@@ -55,6 +55,7 @@ def my_view(request, id=None):
 
     elif request.method == 'POST':
         # Create a new instance
+        id_number = request.POST.get('id_number')
         first_name = request.POST.get('first_name')
         middle_name = request.POST.get('middle_name')
         last_name= request.POST.get('last_name')
@@ -64,6 +65,7 @@ def my_view(request, id=None):
         city = request.POST.get('city')
         region = request.POST.get('region')
         new_instance = Voter.objects.create(
+            id_number=id_number,
             first_name=first_name,
             middle_name=middle_name,
             last_name=last_name,
@@ -78,7 +80,10 @@ def my_view(request, id=None):
         context = {
                 "voters": new_instance
             }
-        return HttpResponse(template.render(context, request))
+        if(new_instance):
+            return HttpResponse(template.render(context, request))
+        else:
+            print(new_instance)
 def edit(request,id):
         try:
             instance = Voter.objects.get(id=id)
